@@ -4,83 +4,96 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="天堂體力監測器" Height="650" Width="450"
-        Background="#1E1E1E" Foreground="White">
-    <Grid Margin="20">
-        <StackPanel>
-            <TextBlock Text="天堂體力監測器" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20" Foreground="#BB86FC"/>
+        Title="天堂監測器" Height="780" Width="480"
+        Background="#121212" Foreground="White" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <!-- Standard WPF ComboBox styles -->
+        <Style TargetType="ComboBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+    </Window.Resources>
+    
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- Title -->
+            <RowDefinition Height="Auto"/> <!-- Config -->
+            <RowDefinition Height="Auto"/> <!-- Monitoring Status -->
+            <RowDefinition Height="Auto"/> <!-- Buttons -->
+            <RowDefinition Height="Auto"/> <!-- Preview -->
+            <RowDefinition Height="*"/>    <!-- Log -->
+        </Grid.RowDefinitions>
 
-            <GroupBox Header="設定" Foreground="#03DAC6" BorderBrush="#03DAC6" Padding="10" Margin="0,0,0,20">
-                <StackPanel>
-                    <Grid Margin="0,5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="視窗標題:" VerticalAlignment="Center"/>
-                        <TextBox x:Name="WindowTitleTextBox" Grid.Column="1" Text="Lineage" Background="#333333" Foreground="White" BorderBrush="#444444"/>
-                    </Grid>
+        <TextBlock Text="天堂監測器 V3.9" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,15" Foreground="#BB86FC"/>
 
-                    <Grid Margin="0,5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="補血點(%):" VerticalAlignment="Center"/>
-                        <TextBox x:Name="ThresholdTextBox" Grid.Column="1" Text="70" Background="#333333" Foreground="White" BorderBrush="#444444"/>
-                    </Grid>
+        <GroupBox Grid.Row="1" Header="參數設定" Foreground="#03DAC6" BorderBrush="#03DAC6" Padding="10" Margin="0,0,0,10">
+            <StackPanel>
+                <Grid Margin="0,3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="60"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="視窗標題:" VerticalAlignment="Center" FontSize="11"/>
+                    <ComboBox x:Name="WindowComboBox" Grid.Column="1" Height="25"/>
+                    <Button x:Name="RefreshButton" Content="🔄" Click="RefreshButton_Click" Grid.Column="2" Margin="3,0,0,0" Background="#333333" Foreground="#03DAC6" BorderBrush="#03DAC6"/>
+                </Grid>
 
-                    <Grid Margin="0,5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="熱鍵:" VerticalAlignment="Center"/>
-                        <ComboBox x:Name="HotkeyComboBox" Grid.Column="1" Background="#333333" Foreground="White" BorderBrush="#444444">
+                <UniformGrid Columns="2" Margin="0,3">
+                    <StackPanel Margin="0,0,3,0">
+                        <TextBlock Text="補血點 %:" FontSize="10"/>
+                        <TextBox x:Name="HPThresholdTextBox" Text="70" Background="#333333" Foreground="White" BorderBrush="#444444"/>
+                    </StackPanel>
+                    <StackPanel Margin="3,0,0,0">
+                        <TextBlock Text="補魔點 %:" FontSize="10"/>
+                        <TextBox x:Name="MPThresholdTextBox" Text="30" Background="#333333" Foreground="White" BorderBrush="#444444"/>
+                    </StackPanel>
+                </UniformGrid>
+
+                <UniformGrid Columns="2" Margin="0,3">
+                    <StackPanel Margin="0,0,3,0">
+                        <TextBlock Text="補血熱鍵:" FontSize="10"/>
+                        <ComboBox x:Name="HPHotkeyComboBox">
                             <ComboBoxItem Content="F5" IsSelected="True"/>
-                            <ComboBoxItem Content="F6"/>
-                            <ComboBoxItem Content="F7"/>
-                            <ComboBoxItem Content="F8"/>
-                            <ComboBoxItem Content="F9"/>
-                            <ComboBoxItem Content="F10"/>
-                            <ComboBoxItem Content="F11"/>
-                            <ComboBoxItem Content="F12"/>
+                            <ComboBoxItem Content="F6"/><ComboBoxItem Content="F7"/><ComboBoxItem Content="F8"/>
+                            <ComboBoxItem Content="F9"/><ComboBoxItem Content="F10"/><ComboBoxItem Content="F11"/><ComboBoxItem Content="F12"/>
                         </ComboBox>
-                    </Grid>
+                    </StackPanel>
+                    <StackPanel Margin="3,0,0,0">
+                        <TextBlock Text="補魔熱鍵:" FontSize="10"/>
+                        <ComboBox x:Name="MPHotkeyComboBox">
+                            <ComboBoxItem Content="F5"/><ComboBoxItem Content="F6" IsSelected="True"/>
+                            <ComboBoxItem Content="F7"/><ComboBoxItem Content="F8"/>
+                            <ComboBoxItem Content="F9"/><ComboBoxItem Content="F10"/><ComboBoxItem Content="F11"/><ComboBoxItem Content="F12"/>
+                        </ComboBox>
+                    </StackPanel>
+                </UniformGrid>
+            </StackPanel>
+        </GroupBox>
 
-                    <Grid Margin="0,5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="80"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="按壓(ms):" VerticalAlignment="Center"/>
-                        <TextBox x:Name="DurationTextBox" Grid.Column="1" Text="50" Background="#333333" Foreground="White" BorderBrush="#444444" Margin="0,0,10,0"/>
-                        <TextBlock Text="間隔(ms):" Grid.Column="2" VerticalAlignment="Center"/>
-                        <TextBox x:Name="IntervalTextBox" Grid.Column="3" Text="150" Background="#333333" Foreground="White" BorderBrush="#444444"/>
-                    </Grid>
-                </StackPanel>
-            </GroupBox>
+        <GroupBox Grid.Row="2" Header="當前狀態" Foreground="#CF6679" BorderBrush="#CF6679" Padding="8" Margin="0,0,0,10">
+            <StackPanel>
+                <Grid Margin="0,0,0,5">
+                    <ProgressBar x:Name="HPProgressBar" Height="20" Minimum="0" Maximum="100" Value="0" Foreground="#FF0000" Background="#330000"/>
+                    <TextBlock x:Name="HPValueTextBlock" Text="HP: 0 / 0" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontWeight="Bold"/>
+                </Grid>
+                <Grid>
+                    <ProgressBar x:Name="MPProgressBar" Height="20" Minimum="0" Maximum="100" Value="0" Foreground="#0077FF" Background="#001133"/>
+                    <TextBlock x:Name="MPValueTextBlock" Text="MP: 0 / 0" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontWeight="Bold"/>
+                </Grid>
+            </StackPanel>
+        </GroupBox>
 
-            <GroupBox Header="體力狀態" Foreground="#CF6679" BorderBrush="#CF6679" Padding="10" Margin="0,0,0,20">
-                <StackPanel>
-                    <TextBlock x:Name="HPValueTextBlock" Text="0 / 0 (0%)" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
-                    <ProgressBar x:Name="HPProgressBar" Height="25" Minimum="0" Maximum="100" Value="0" Foreground="#03DAC6" Background="#333333" BorderBrush="#444444"/>
-                </StackPanel>
-            </GroupBox>
+        <ProgressBar x:Name="CalibrationProgressBar" Grid.Row="3" Height="5" Margin="0,0,0,5" Visibility="Collapsed" IsIndeterminate="False" Maximum="100" VerticalAlignment="Top" Foreground="#03DAC6" Background="#121212" BorderThickness="0"/>
+        <Button x:Name="MainActionButton" Grid.Row="3" Content="🚀 開始監測" Click="MainActionButton_Click" Height="50" Margin="0,0,0,10" Background="#BB86FC" Foreground="Black" FontWeight="Bold" FontSize="16" BorderThickness="0"/>
 
-            <Grid Margin="0,0,0,20">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Button x:Name="StartButton" Content="開始監測" Click="StartButton_Click" Height="40" Margin="0,0,5,0" Background="#BB86FC" Foreground="Black" FontWeight="Bold" BorderThickness="0"/>
-                <Button x:Name="StopButton" Content="停止監測" Click="StopButton_Click" Height="40" Margin="5,0,0,0" Background="#333333" Foreground="#BB86FC" FontWeight="Bold" BorderThickness="1" BorderBrush="#BB86FC" IsEnabled="False"/>
-            </Grid>
+        <GroupBox Grid.Row="4" Header="畫面預覽" Foreground="#BB86FC" BorderBrush="#BB86FC" Height="110" Margin="0,0,0,10">
+            <UniformGrid Columns="2">
+                <Image x:Name="HPPreviewImage" Stretch="Uniform"/>
+                <Image x:Name="MPPreviewImage" Stretch="Uniform"/>
+            </UniformGrid>
+        </GroupBox>
 
-            <TextBlock Text="執行日誌:" Margin="0,0,0,5"/>
-            <TextBox x:Name="LogTextBox" Height="150" IsReadOnly="True" VerticalScrollBarVisibility="Auto" Background="#121212" Foreground="#888888" BorderBrush="#333333" FontFamily="Consolas"/>
-        </StackPanel>
+        <TextBox x:Name="LogTextBox" Grid.Row="5" IsReadOnly="True" VerticalScrollBarVisibility="Auto" Background="#121212" Foreground="#888888" BorderBrush="#333333" FontFamily="Consolas" FontSize="10" Padding="5"/>
     </Grid>
 </Window>

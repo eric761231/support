@@ -71,6 +71,21 @@ namespace LinHPMonitor
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
+        [DllImport("dwmapi.dll")]
+        public static extern int DwmGetWindowAttribute(IntPtr hwnd, uint dwAttribute, out RECT pvAttribute, int cbAttribute);
+
+        public const uint DWMWA_EXTENDED_FRAME_BOUNDS = 9;
+
+        public static RECT GetActualWindowRect(IntPtr hWnd)
+        {
+            if (DwmGetWindowAttribute(hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, out RECT rect, Marshal.SizeOf(typeof(RECT))) == 0)
+            {
+                return rect;
+            }
+            GetWindowRect(hWnd, out rect);
+            return rect;
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
         {
