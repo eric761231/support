@@ -22,6 +22,7 @@
             <RowDefinition Height="Auto"/> <!-- Buttons -->
             <RowDefinition Height="Auto"/> <!-- Preview -->
             <RowDefinition Height="*"/>    <!-- Log -->
+            <RowDefinition Height="Auto"/> <!-- Status Bar -->
         </Grid.RowDefinitions>
 
         <TextBlock Text="天堂監測器 V3.9" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,15" Foreground="#BB86FC"/>
@@ -47,6 +48,27 @@
                     <StackPanel Margin="3,0,0,0">
                         <TextBlock Text="補魔點 %:" FontSize="10"/>
                         <TextBox x:Name="MPThresholdTextBox" Text="30" Background="#333333" Foreground="White" BorderBrush="#444444"/>
+                    </StackPanel>
+                </UniformGrid>
+
+                <UniformGrid Columns="2" Margin="0,3">
+                    <StackPanel Margin="0,0,3,0">
+                        <TextBlock Text="最大血量 (手動):" FontSize="10"/>
+                        <TextBox x:Name="MaxHPTextBox" Text="0" Background="#333333" Foreground="White" BorderBrush="#444444"/>
+                    </StackPanel>
+                    <StackPanel Margin="3,0,0,0">
+                        <TextBlock Text="最大魔量 (手動):" FontSize="10"/>
+                        <TextBox x:Name="MaxMPTextBox" Text="0" Background="#333333" Foreground="White" BorderBrush="#444444"/>
+                    </StackPanel>
+                </UniformGrid>
+
+                <UniformGrid Columns="2" Margin="0,3">
+                    <StackPanel Margin="0,0,3,0">
+                        <TextBlock Text="連按次數 (1~5):" FontSize="10"/>
+                        <TextBox x:Name="PressCountTextBox" Text="1" Background="#333333" Foreground="White" BorderBrush="#444444"/>
+                    </StackPanel>
+                    <StackPanel Margin="3,0,0,0">
+                        <!-- 預留空間，保持對齊 -->
                     </StackPanel>
                 </UniformGrid>
 
@@ -87,13 +109,32 @@
         <ProgressBar x:Name="CalibrationProgressBar" Grid.Row="3" Height="5" Margin="0,0,0,5" Visibility="Collapsed" IsIndeterminate="False" Maximum="100" VerticalAlignment="Top" Foreground="#03DAC6" Background="#121212" BorderThickness="0"/>
         <Button x:Name="MainActionButton" Grid.Row="3" Content="🚀 開始監測" Click="MainActionButton_Click" Height="50" Margin="0,0,0,10" Background="#BB86FC" Foreground="Black" FontWeight="Bold" FontSize="16" BorderThickness="0"/>
 
+        <!-- 新增：預覽開關 -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,10">
+            <CheckBox x:Name="SkipCalibrationCheckBox" Content="使用預覽區域（跳過自動校準）" Foreground="#CCCCCC" VerticalAlignment="Center" Checked="SkipCalibrationCheckBox_Changed" Unchecked="SkipCalibrationCheckBox_Changed"/>
+        </StackPanel>
+
         <GroupBox Grid.Row="4" Header="畫面預覽" Foreground="#BB86FC" BorderBrush="#BB86FC" Height="110" Margin="0,0,0,10">
             <UniformGrid Columns="2">
-                <Image x:Name="HPPreviewImage" Stretch="Uniform"/>
-                <Image x:Name="MPPreviewImage" Stretch="Uniform"/>
+                <StackPanel>
+                    <Image x:Name="HPPreviewImage" Stretch="Uniform" Height="70"/>
+                    <TextBlock x:Name="HPPreviewTextBlock" Text="HP OCR:" FontSize="11" Foreground="#AAAAAA"/>
+                </StackPanel>
+                <StackPanel>
+                    <Image x:Name="MPPreviewImage" Stretch="Uniform" Height="70"/>
+                    <TextBlock x:Name="MPPreviewTextBlock" Text="MP OCR:" FontSize="11" Foreground="#AAAAAA"/>
+                </StackPanel>
             </UniformGrid>
         </GroupBox>
 
         <TextBox x:Name="LogTextBox" Grid.Row="5" IsReadOnly="True" VerticalScrollBarVisibility="Auto" Background="#121212" Foreground="#888888" BorderBrush="#333333" FontFamily="Consolas" FontSize="10" Padding="5"/>
+
+        <!-- V4.1: 新增滑鼠座標顯示區 -->
+        <Border Grid.Row="6" Background="#1E1E1E" BorderBrush="#333333" BorderThickness="0,1,0,0" Padding="5,2">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="滑鼠位置: " FontSize="10" VerticalAlignment="Center" Foreground="#888888"/>
+                <TextBlock x:Name="MousePosTextBlock" Text="0, 0" FontSize="11" FontWeight="Bold" Foreground="#03DAC6" VerticalAlignment="Center" Width="80"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>
