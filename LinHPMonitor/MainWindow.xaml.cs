@@ -200,7 +200,7 @@ namespace LinHPMonitor
                             int centerX = rect.Left + (int)(_config.HPRegionNormX * winW);
                             int centerY = rect.Top + (int)(_config.HPRegionNormY * winH);
                             int hpX = centerX - w / 2;
-                            int hpY = centerY - h / 2 + 10;
+                            int hpY = centerY - h / 2;
                             hpX = Math.Max(0, Math.Min(hpX, winW - w));
                             hpY = Math.Max(0, Math.Min(hpY, winH - h));
                             hpRect = new System.Drawing.Rectangle(hpX, hpY, w, h);
@@ -208,7 +208,7 @@ namespace LinHPMonitor
                         else if (_config.HPRegionX != 0 || _config.HPRegionY != 0)
                         {
                             int hpX = _config.HPRegionX - w / 2;
-                            int hpY = _config.HPRegionY - h / 2 + 10;
+                            int hpY = _config.HPRegionY - h / 2;
                             if (hpX < 0) hpX = _config.HPRegionX;
                             if (hpY < 0) hpY = _config.HPRegionY;
                             hpRect = new System.Drawing.Rectangle(hpX, hpY, w, h);
@@ -224,7 +224,7 @@ namespace LinHPMonitor
                             int centerX = rect.Left + (int)(_config.MPRegionNormX * winW);
                             int centerY = rect.Top + (int)(_config.MPRegionNormY * winH);
                             int mpX = centerX - w / 2;
-                            int mpY = centerY - h / 2 + 10;
+                            int mpY = centerY - h / 2;
                             mpX = Math.Max(0, Math.Min(mpX, winW - w));
                             mpY = Math.Max(0, Math.Min(mpY, winH - h));
                             mpRect = new System.Drawing.Rectangle(mpX, mpY, w, h);
@@ -232,7 +232,7 @@ namespace LinHPMonitor
                         else if (_config.MPRegionX != 0 || _config.MPRegionY != 0)
                         {
                             int mpX = _config.MPRegionX - w / 2;
-                            int mpY = _config.MPRegionY - h / 2 + 10;
+                            int mpY = _config.MPRegionY - h / 2;
                             if (mpX < 0) mpX = _config.MPRegionX;
                             if (mpY < 0) mpY = _config.MPRegionY;
                             mpRect = new System.Drawing.Rectangle(mpX, mpY, w, h);

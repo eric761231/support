@@ -99,7 +99,7 @@ namespace LinHPMonitor
                     int cx = hpAnchor.Value.X + hpAnchor.Value.Width / 2;
                     int cy = hpAnchor.Value.Y + hpAnchor.Value.Height / 2;
                     int x = cx - regionWidth / 2 + (int)(regionWidth * 0.08); // 小幅右移以避開標籤
-                    int y = cy - regionHeight / 2 + (int)(regionHeight * 0.0) + 10; // 向下偏移 10 像素
+                    int y = cy - regionHeight / 2; // 不做額外垂直偏移
                     x = Math.Max(0, Math.Min(x, width - regionWidth));
                     y = Math.Max(0, Math.Min(y, height - regionHeight));
                     hpFound = new Rectangle(x, y, regionWidth, regionHeight);
@@ -112,7 +112,7 @@ namespace LinHPMonitor
                         int cx = bar.Value.X + bar.Value.Width / 2;
                         int cy = bar.Value.Y + bar.Value.Height / 2;
                         int x = cx - regionWidth / 2;
-                        int y = cy - regionHeight / 2 + 10;
+                        int y = cy - regionHeight / 2;
                         x = Math.Max(0, Math.Min(x, width - regionWidth));
                         y = Math.Max(0, Math.Min(y, height - regionHeight));
                         hpFound = new Rectangle(x, y, regionWidth, regionHeight);
@@ -126,7 +126,7 @@ namespace LinHPMonitor
                     int cx = mpAnchor.Value.X + mpAnchor.Value.Width / 2;
                     int cy = mpAnchor.Value.Y + mpAnchor.Value.Height / 2;
                     int x = cx - regionWidth / 2 + (int)(regionWidth * 0.08);
-                    int y = cy - regionHeight / 2 + (int)(regionHeight * 0.0) + 10;
+                    int y = cy - regionHeight / 2;
                     x = Math.Max(0, Math.Min(x, width - regionWidth));
                     y = Math.Max(0, Math.Min(y, height - regionHeight));
                     mpFound = new Rectangle(x, y, regionWidth, regionHeight);
@@ -141,7 +141,7 @@ namespace LinHPMonitor
                         int cx = mpFound.Value.X + mpFound.Value.Width / 2;
                         int cy = mpFound.Value.Y + mpFound.Value.Height / 2;
                         int x = Math.Max(0, Math.Min(cx - regionWidth / 2, width - regionWidth));
-                        int y = Math.Max(0, Math.Min(cy - regionHeight / 2 + 10, height - regionHeight));
+                        int y = Math.Max(0, Math.Min(cy - regionHeight / 2, height - regionHeight));
                         mpFound = new Rectangle(x, y, regionWidth, regionHeight);
                     }
                 }
@@ -165,8 +165,8 @@ namespace LinHPMonitor
                     // 若 X 不同（如並排佈局），則允許相同高度 (Same Y)
                     if (Math.Abs(hpFound.Value.X - mpFound.Value.X) < 10 && Math.Abs(hpFound.Value.Y - mpFound.Value.Y) < 5) {
                         log += "[重疊修正啟動] ";
-                        // V4.0: 位置往下位移 20 像素以避開 HP 條
-                        mpFound = new Rectangle(mpFound.Value.X, hpFound.Value.Y + 20, mpFound.Value.Width, mpFound.Value.Height);
+                        // 取消額外垂直偏移，直接對齊同一 Y
+                        mpFound = new Rectangle(mpFound.Value.X, hpFound.Value.Y, mpFound.Value.Width, mpFound.Value.Height);
                     }
                 }
 
@@ -314,8 +314,9 @@ namespace LinHPMonitor
         }
 
         // 針對擷取時可微調的 Y 偏移（像素）以修正預覽位置
-        public int HPCaptureYOffset { get; set; } = 35;
-        public int MPCaptureYOffset { get; set; } = 35;
+        // 現在預設為 0，方便測試無偏移行為
+        public int HPCaptureYOffset { get; set; } = 0;
+        public int MPCaptureYOffset { get; set; } = 0;
 
         // ─────────────────────────────────────────────────────────────
         // 欄位投影法 fillRatio（方向感應版）
