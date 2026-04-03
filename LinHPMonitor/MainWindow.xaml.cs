@@ -180,26 +180,68 @@ namespace LinHPMonitor
                         return; // 終止開始
                     }
                 }
-                // 若設定檔中有儲存區域，嘗試將其套用到 Monitor
+                // 若設定檔中有儲存區域，嘗試將其套用到 Monitor。
+                // 支援絕對座標（HPRegionX/HPRegionY）或正規化比例值（HPRegionNormX/HPRegionNormY + RegionWidthRatio）
                 try {
-                    if (_config.HPRegionX != 0 || _config.MPRegionX != 0) {
-                        int w = _config.RegionWidth > 0 ? _config.RegionWidth : 260;
-                        int h = _config.RegionHeight > 0 ? _config.RegionHeight : 40;
+                    IntPtr hwnd = Win32Input.FindWindowPartial(_config.WindowTitle);
+                    if (hwnd != IntPtr.Zero)
+                    {
+                        var rect = Win32Input.GetActualWindowRect(hwnd);
+                        int winW = rect.Right - rect.Left;
+                        int winH = rect.Bottom - rect.Top;
 
-                        // 假設使用者可能提供的是中心座標（常見情境），先嘗試把它當 center 轉為 top-left
-                        int hpX = _config.HPRegionX - w / 2;
-                        int hpY = _config.HPRegionY - h / 2 + 10;
-                        int mpX = _config.MPRegionX - w / 2;
-                        int mpY = _config.MPRegionY - h / 2 + 10;
+                        int w = _config.RegionWidth > 0 ? _config.RegionWidth : Math.Max(140, (int)(winW * 0.135));
+                        int h = _config.RegionHeight > 0 ? _config.RegionHeight : Math.Max(22, (int)(winH * 0.037));
 
-                        // 但若這樣會出現負座標，退回直接使用原始值當作 top-left
-                        if (hpX < 0) { hpX = _config.HPRegionX; }
-                        if (hpY < 0) { hpY = _config.HPRegionY; }
-                        if (mpX < 0) { mpX = _config.MPRegionX; }
-                        if (mpY < 0) { mpY = _config.MPRegionY; }
+                        System.Drawing.Rectangle hpRect, mpRect;
 
-                        var hpRect = new System.Drawing.Rectangle(hpX, hpY, w, h);
-                        var mpRect = new System.Drawing.Rectangle(mpX, mpY, w, h);
+                        if (_config.RegionWidthRatio > 0 && _config.HPRegionNormX > 0)
+                        {
+                            int centerX = rect.Left + (int)(_config.HPRegionNormX * winW);
+                            int centerY = rect.Top + (int)(_config.HPRegionNormY * winH);
+                            int hpX = centerX - w / 2;
+                            int hpY = centerY - h / 2 + 10;
+                            hpX = Math.Max(0, Math.Min(hpX, winW - w));
+                            hpY = Math.Max(0, Math.Min(hpY, winH - h));
+                            hpRect = new System.Drawing.Rectangle(hpX, hpY, w, h);
+                        }
+                        else if (_config.HPRegionX != 0 || _config.HPRegionY != 0)
+                        {
+                            int hpX = _config.HPRegionX - w / 2;
+                            int hpY = _config.HPRegionY - h / 2 + 10;
+                            if (hpX < 0) hpX = _config.HPRegionX;
+                            if (hpY < 0) hpY = _config.HPRegionY;
+                            hpRect = new System.Drawing.Rectangle(hpX, hpY, w, h);
+                        }
+                        else
+                        {
+                            // fallback to internal defaults
+                            hpRect = new System.Drawing.Rectangle(_monitor.HPRegion.X, _monitor.HPRegion.Y, _monitor.HPRegion.Width, _monitor.HPRegion.Height);
+                        }
+
+                        if (_config.RegionWidthRatio > 0 && _config.MPRegionNormX > 0)
+                        {
+                            int centerX = rect.Left + (int)(_config.MPRegionNormX * winW);
+                            int centerY = rect.Top + (int)(_config.MPRegionNormY * winH);
+                            int mpX = centerX - w / 2;
+                            int mpY = centerY - h / 2 + 10;
+                            mpX = Math.Max(0, Math.Min(mpX, winW - w));
+                            mpY = Math.Max(0, Math.Min(mpY, winH - h));
+                            mpRect = new System.Drawing.Rectangle(mpX, mpY, w, h);
+                        }
+                        else if (_config.MPRegionX != 0 || _config.MPRegionY != 0)
+                        {
+                            int mpX = _config.MPRegionX - w / 2;
+                            int mpY = _config.MPRegionY - h / 2 + 10;
+                            if (mpX < 0) mpX = _config.MPRegionX;
+                            if (mpY < 0) mpY = _config.MPRegionY;
+                            mpRect = new System.Drawing.Rectangle(mpX, mpY, w, h);
+                        }
+                        else
+                        {
+                            mpRect = new System.Drawing.Rectangle(_monitor.MPRegion.X, _monitor.MPRegion.Y, _monitor.MPRegion.Width, _monitor.MPRegion.Height);
+                        }
+
                         _monitor.SetRegions(hpRect, mpRect);
                         Log($"已套用儲存區域：HP({hpRect.X},{hpRect.Y}) MP({mpRect.X},{mpRect.Y})");
                     }
@@ -284,6 +326,34 @@ namespace LinHPMonitor
                         }
                     }
                     catch (Exception prevEx) { Log($"[預覽擷取失敗] {prevEx.Message}"); }
+
+                    // 將校準結果轉為正規化座標並儲存到設定檔，方便跨視窗大小自動套用
+                    try
+                    {
+                        IntPtr hwnd = Win32Input.FindWindowPartial(_config.WindowTitle);
+                        if (hwnd != IntPtr.Zero)
+                        {
+                            var rect = Win32Input.GetActualWindowRect(hwnd);
+                            int winW = rect.Right - rect.Left;
+                            int winH = rect.Bottom - rect.Top;
+                            if (winW > 0 && winH > 0)
+                            {
+                                var hp = _monitor.HPRegion;
+                                var mp = _monitor.MPRegion;
+                                _config.RegionWidth = hp.Width;
+                                _config.RegionHeight = hp.Height;
+                                _config.RegionWidthRatio = Math.Round((double)hp.Width / winW, 4);
+                                _config.RegionHeightRatio = Math.Round((double)hp.Height / winH, 4);
+                                _config.HPRegionNormX = Math.Round((double)(hp.X + hp.Width / 2) / winW, 4);
+                                _config.HPRegionNormY = Math.Round((double)(hp.Y + hp.Height / 2) / winH, 4);
+                                _config.MPRegionNormX = Math.Round((double)(mp.X + mp.Width / 2) / winW, 4);
+                                _config.MPRegionNormY = Math.Round((double)(mp.Y + mp.Height / 2) / winH, 4);
+                                ConfigManager.Save(_config);
+                                Log($"已儲存正規化校準資料（相對視窗）：HP({_config.HPRegionNormX:F3},{_config.HPRegionNormY:F3}) MP({_config.MPRegionNormX:F3},{_config.MPRegionNormY:F3}) 尺寸比: {_config.RegionWidthRatio:F3}x{_config.RegionHeightRatio:F3}");
+                            }
+                        }
+                    }
+                    catch (Exception normEx) { Log($"[儲存校準比例失敗] {normEx.Message}"); }
                 }
 
                 Log("監測器啟動成功。");

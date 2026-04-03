@@ -20,6 +20,14 @@ namespace LinHPMonitor
         public int MPRegionY { get; set; } = 0;
         public int RegionWidth { get; set; } = 260;
         public int RegionHeight { get; set; } = 40;
+        // 正規化座標 (相對於遊戲視窗)：中心點比例與區域比例
+        // 範圍 0.0 - 1.0，若為 0 表示未設定
+        public double HPRegionNormX { get; set; } = 0.0;
+        public double HPRegionNormY { get; set; } = 0.0;
+        public double MPRegionNormX { get; set; } = 0.0;
+        public double MPRegionNormY { get; set; } = 0.0;
+        public double RegionWidthRatio { get; set; } = 0.0;
+        public double RegionHeightRatio { get; set; } = 0.0;
         // 是否在啟動時跳過自動校準，改用目前預覽區域（由 UI 控制）
         public bool SkipCalibrationForPreview { get; set; } = true;
         // 是否啟用 PaddleOCR 做為 Tesseract 的備援

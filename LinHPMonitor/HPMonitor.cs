@@ -63,10 +63,11 @@ namespace LinHPMonitor
                 // 1. 尋找 HP/MP 文字錨點
                 string log = "日誌: ";
                 onProgress?.Invoke(30, "正在搜尋 HP 文字錨點...");
-                Rectangle? hpAnchor = FindTextAnchor(mat, "HP", false);
-                
+                // 優先嘗試含冒號的標籤（例如 "HP:"），若找不到再降級到不含冒號的 "HP"
+                Rectangle? hpAnchor = FindTextAnchor(mat, "HP:", false) ?? FindTextAnchor(mat, "HP", false);
+
                 onProgress?.Invoke(50, "正在搜尋 MP 文字錨點...");
-                Rectangle? mpAnchor = FindTextAnchor(mat, "MP", true);
+                Rectangle? mpAnchor = FindTextAnchor(mat, "MP:", true) ?? FindTextAnchor(mat, "MP", true);
 
                 log += hpAnchor.HasValue ? $"[找到 HP 錨點 {hpAnchor.Value.X},{hpAnchor.Value.Y}] " : "[未找到 HP 錨點] ";
                 log += mpAnchor.HasValue ? $"[找到 MP 錨點 {mpAnchor.Value.X},{mpAnchor.Value.Y}] " : "[未找到 MP 錨點] ";
